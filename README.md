@@ -1,2 +1,200 @@
-# agents
-agents for it product
+---
+layout: default
+title: Home
+nav_order: 1
+permalink: /
+---
+
+# AI Agents Builder
+
+Toolkit for finding, creating, and validating AI agent skills and workflows. Works across 10 AI coding tools — auto-detects which tool is active and installs files in the correct directory.
+
+Built on the [agent-templates](https://github.com/ivannguyendev/agent-templates) community catalog.
+
+## Quick Start
+
+Copy the `agent-builder/` folder into your project's skill directory for the AI tool you're using:
+
+```bash
+# Claude Code
+cp -r agent-builder/ your-project/.claude/
+
+# GitHub Copilot
+cp -r agent-builder/ your-project/.github/
+
+# Antigravity
+cp -r agent-builder/ your-project/.agents/
+
+# Gemini CLI
+cp -r agent-builder/ your-project/.gemini/
+
+# Cursor
+cp -r agent-builder/ your-project/.cursor/
+
+# Windsurf
+cp -r agent-builder/ your-project/.windsurf/
+
+# OpenCode
+cp -r agent-builder/ your-project/.opencode/
+
+# Aider (uses root directory)
+cp -r agent-builder/* your-project/
+
+# OpenClaw
+cp -r agent-builder/ your-project/.openclaw/
+
+# Qwen
+cp -r agent-builder/ your-project/.qwen/
+```
+
+Or auto-detect and install:
+
+```bash
+# Detect which AI tools are installed
+bash agent-builder/scripts/detect-tools.sh
+
+# Copy to the detected tool's path
+TOOL_PATH=$(bash agent-builder/scripts/detect-tools.sh --path claude-code)
+cp -r agent-builder/ "$TOOL_PATH/"
+```
+
+## Project Structure
+
+```
+agents/
+├── agent-builder/
+│   ├── SKILL.md                    # skill-matcher — main skill
+│   └── scripts/
+│       ├── detect-tools.sh         # AI tool detection (10 tools)
+│       └── validate-skill.sh       # SKILL.md format validation
+├── scripts/
+│   └── generate-changelog.sh       # Auto-generate changelog from commits
+├── .github/workflows/
+│   └── deploy-pages.yml            # GitHub Pages auto-deploy
+├── _config.yml                     # Jekyll site config
+├── AGENT.md                        # AI agent instructions
+├── CONVENTION.md                   # Rules & style guide
+└── README.md
+```
+
+## Components
+
+### skill-matcher (`agent-builder/SKILL.md`)
+
+Main skill — matches natural language requirements to existing skills/workflows from the community catalog.
+
+**6-step workflow:**
+
+| Step | Action | Description |
+|------|--------|-------------|
+| 1 | Detect Environment | Identify active AI tools and resolve install paths |
+| 2 | Gather Requirement | Collect user's task/goal in plain language |
+| 3 | Fetch Catalog | Retrieve skills & workflows CSV indexes from GitHub |
+| 4 | Score Items | Weighted keyword matching (name +3, tags +2, description +1) |
+| 5 | Present Results | Top 3 matches with install commands, or gap analysis |
+| 6 | Create/Adapt Skill | Interview, write SKILL.md, validate, install |
+
+### detect-tools.sh (`agent-builder/scripts/detect-tools.sh`)
+
+Detects installed AI coding tools and resolves their install paths.
+
+**Supported tools:**
+
+| Tool | Install Path | Detection Method |
+|------|-------------|-----------------|
+| claude-code | `.claude/` | `claude` CLI or `~/.claude/` dir |
+| copilot | `.github/` | `gh` extension or `~/.github/` dir |
+| antigravity | `.agents/` | `antigravity` CLI or `~/.gemini/antigravity/` |
+| gemini-cli | `.gemini/` | `gemini` CLI or `~/.gemini/extensions/` |
+| opencode | `.opencode/` | `opencode` CLI or `.opencode/` dir |
+| cursor | `.cursor/` | `cursor` CLI, `.cursor/` dir, or app bundle |
+| aider | `./` | `aider` CLI or Python module |
+| windsurf | `.windsurf/` | `windsurf` CLI, `.windsurfrules`, or app bundle |
+| openclaw | `.openclaw/` | `openclaw` CLI or `~/.openclaw/` dir |
+| qwen | `.qwen/` | `qwen` CLI or `.qwen/` dir |
+
+**Usage:**
+
+```bash
+./detect-tools.sh              # Human-readable output
+./detect-tools.sh --json       # JSON format
+./detect-tools.sh --first      # First detected tool name only
+./detect-tools.sh --path <tool> # Install path for a specific tool
+```
+
+### validate-skill.sh (`agent-builder/scripts/validate-skill.sh`)
+
+Validates SKILL.md format and frontmatter. Zero external dependencies.
+
+**Checks performed:**
+- SKILL.md file exists
+- YAML frontmatter format (opening/closing `---`)
+- Required fields: `name`, `description`
+- `name`: kebab-case, max 64 characters
+- `description`: no angle brackets, max 1024 characters
+- Allowed frontmatter keys only: `name`, `description`, `license`, `allowed-tools`, `metadata`, `compatibility`
+
+**Usage:**
+
+```bash
+./validate-skill.sh <skill-directory>
+./validate-skill.sh .                    # Validate current directory
+
+# Example output (pass):
+#   ✓ SKILL.md found
+#   ✓ Frontmatter valid (lines 1-5)
+#   ✓ name: my-skill (kebab-case, 8 chars)
+#   ✓ description: 156 chars
+#   Result: PASSED
+
+# Example output (fail):
+#   ✓ SKILL.md found
+#   ✓ Frontmatter valid (lines 1-4)
+#   ✗ name 'Bad_Name' must be kebab-case
+#   ✗ Missing required field 'description'
+#   Result: FAILED (2 error(s))
+```
+
+### generate-changelog.sh (`scripts/generate-changelog.sh`)
+
+Auto-generates a changelog from conventional commits. Groups by type (feat, fix, docs, etc.), supports git tags as version sections. Zero external dependencies.
+
+**Usage:**
+
+```bash
+./generate-changelog.sh                  # Output to stdout
+./generate-changelog.sh -o CHANGELOG.md  # Write to file
+./generate-changelog.sh --jekyll         # Add Jekyll front matter for GitHub Pages
+```
+
+The changelog is auto-generated during GitHub Pages deployment — no manual step needed.
+
+## Skill Format
+
+Every skill requires a `SKILL.md` with YAML frontmatter:
+
+```yaml
+---
+name: my-skill-name
+description: What the skill does and when to trigger it.
+license: MIT
+---
+
+# Skill Title
+
+Instructions for the AI agent...
+```
+
+**Anatomy:**
+
+```
+skill-name/
+├── SKILL.md          (required — under 500 lines)
+├── scripts/          (optional — deterministic tasks)
+├── references/       (optional — domain docs, loaded as needed)
+└── assets/           (optional — templates, icons, fonts)
+```
+
+## License
+
+MIT
