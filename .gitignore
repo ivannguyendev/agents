@@ -19,12 +19,11 @@ Thumbs.db
 *.sublime-project
 *.sublime-workspace
 
-# Node.js (if adding web tools later)
+# Node.js
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-package-lock.json
 yarn.lock
 
 # Python (if adding scripts)
@@ -79,8 +78,8 @@ integrations/kimi/*/
 !integrations/openclaw/README.md
 !integrations/kimi/README.md
 
-# Jekyll
-_site/
-.sass-cache/
-.jekyll-cache/
-.jekyll-metadata
+# Astro
+docs/dist/
+docs/.astro/
+docs/node_modules/
+docs/src/content/docs/changelog.md

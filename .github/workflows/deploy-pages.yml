@@ -24,19 +24,30 @@ jobs:
           fetch-depth: 0
 
       - name: Generate Changelog
-        run: bash scripts/generate-changelog.sh --jekyll -o CHANGELOG.md
+        run: bash scripts/generate-changelog.sh --astro -o docs/src/content/docs/changelog.md
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+
+      - name: Install dependencies
+        working-directory: docs
+        run: npm ci
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Build with Jekyll
-        uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./
-          destination: ./_site
+      - name: Build with Astro
+        working-directory: docs
+        run: npx astro build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/dist
 
   deploy:
     environment:

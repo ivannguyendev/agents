@@ -14,7 +14,8 @@ AI Agents Builder — toolkit for finding, creating, and validating AI agent ski
 | `agent-builder/scripts/detect-tools.sh` | Detect active AI tools and resolve install paths |
 | `agent-builder/scripts/validate-skill.sh` | Validate SKILL.md format (zero deps, bash only) |
 | `scripts/generate-changelog.sh` | Auto-generate changelog from conventional commits |
-| `.github/workflows/deploy-pages.yml` | GitHub Pages auto-deploy (generates changelog + Jekyll build) |
+| `.github/workflows/deploy-pages.yml` | GitHub Pages auto-deploy (generates changelog + Astro build) |
+| `docs/` | Astro + Starlight documentation site |
 | `CONVENTION.md` | Rules and style guide |
 | `README.md` | Project documentation |
 

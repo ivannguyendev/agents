@@ -10,6 +10,7 @@ set -eo pipefail
 #   ./generate-changelog.sh                  # Output to stdout
 #   ./generate-changelog.sh -o CHANGELOG.md  # Write to file
 #   ./generate-changelog.sh --jekyll         # Add Jekyll front matter
+#   ./generate-changelog.sh --astro          # Add Astro/Starlight front matter
 #
 # Exit codes:
 #   0 — success
@@ -19,11 +20,13 @@ set -eo pipefail
 
 OUTFILE=""
 JEKYLL=false
+ASTRO=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     -o) OUTFILE="$2"; shift 2 ;;
     --jekyll) JEKYLL=true; shift ;;
+    --astro) ASTRO=true; shift ;;
     *) echo "Unknown option: $1" >&2; exit 1 ;;
   esac
 done
@@ -96,6 +99,14 @@ generate() {
     echo "layout: default"
     echo "title: Changelog"
     echo "nav_order: 2"
+    echo "---"
+    echo ""
+  fi
+
+  if [[ "$ASTRO" == true ]]; then
+    echo "---"
+    echo "title: Changelog"
+    echo "description: Auto-generated changelog from conventional commits"
     echo "---"
     echo ""
   fi
